@@ -1,0 +1,6 @@
+<?php
+declare(strict_types=1);
+function qrx_start(string $title,string $active): void {?>
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e($title)?> · QR Experience</title><link rel="stylesheet" href="../../app/assets/qr-experience/admin.css?v=410"></head><body class="qrx-admin"><div class="qrx-shell"><aside class="qrx-sidebar"><div class="qrx-brand"><div class="qrx-brand-badge">QR</div><div><strong>QR Experience</strong><small>v4.1 Studio</small></div></div><nav class="qrx-nav"><a class="<?=$active==='dashboard'?'active':''?>" href="./">⌂ Dashboard</a><a class="<?=$active==='appearance'?'active':''?>" href="appearance.php">◈ Appearance Studio</a><a class="<?=$active==='layout'?'active':''?>" href="layout.php">☷ Sayfa Düzeni</a><a href="../qr-menu.php">▦ Tema Kütüphanesi</a><a href="../../" target="_blank">↗ Canlı Menüyü Aç</a><a href="../">← Yönetim Paneli</a></nav></aside><div class="qrx-main"><header class="qrx-top"><strong><?=e($title)?></strong><div><a href="../../" target="_blank">Menüyü Önizle ↗</a></div></header><main class="qrx-content">
+<?php }
+function qrx_end(): void {?></main></div></div><script src="../../app/assets/qr-experience/admin.js?v=410"></script></body></html><?php }

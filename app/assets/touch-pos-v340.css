@@ -1,0 +1,23 @@
+/* v3.4.0 CherryHouse Touch POS - SambaPOS inspired operation layout */
+:root{--pos-blue:#1769aa;--pos-blue2:#0f4f8d;--pos-orange:#f6ad28;--pos-green:#239b38;--pos-border:#b8c0c8;--pos-bg:#d7dadd;--pos-red:#d71920}
+body{background:var(--pos-bg)!important;color:#20242a!important;font-family:Arial,"Segoe UI",sans-serif!important}
+.top,header{background:linear-gradient(#2d83c8,#1769aa)!important;border-bottom:1px solid #0c4477!important;box-shadow:none!important;border-radius:0!important}
+.top strong,header strong{font-size:24px;text-transform:uppercase;letter-spacing:.5px}
+.layout{grid-template-columns:178px minmax(330px,1fr) minmax(500px,1.65fr)!important;gap:5px!important;padding:5px!important;background:#cfd3d6!important}
+.panel,.card{border-radius:2px!important;box-shadow:none!important;border:1px solid #aeb5bb!important;background:#f7f7f7!important}
+.table-panel{grid-column:1/-1}.tables-only .table-panel{grid-column:1/-1}.tables-only>.panel:not(.table-panel){display:none}
+.panel-title{border-radius:0!important;background:linear-gradient(#fafafa,#e5e5e5)!important;border-bottom:1px solid #aeb5bb!important}
+.table{border-radius:2px!important;border:1px solid #bbb!important;border-left:1px solid #bbb!important;background:linear-gradient(#fff,#e8e8e8)!important;min-height:82px;font-size:18px}
+.table.open{background:linear-gradient(#ffb42b,#f39700)!important;border-color:#d98800!important}.table.selected{outline:3px solid #1769aa!important}
+.categories{display:grid!important;grid-template-columns:1fr!important;align-content:start;overflow:auto!important;padding:4px!important;position:static!important;background:#eee!important}
+.cat{border-radius:3px!important;background:linear-gradient(#ffc54b,#f5a713)!important;color:#111!important;border:1px solid #b97c00!important;min-height:64px;display:flex;align-items:center;padding:10px!important;font-size:18px}.cat.active{background:linear-gradient(#ffb326,#ee8f00)!important;box-shadow:inset 0 0 0 3px #fff7}
+.products{grid-template-columns:repeat(3,minmax(120px,1fr))!important;align-content:start;padding:4px!important;gap:4px!important;background:#ddd!important}
+.product{min-height:105px!important;border-radius:3px!important;border:1px solid #146b24!important;background:linear-gradient(#62c66d,#138c28)!important;color:#fff!important;box-shadow:none!important;text-align:center!important}.product .pic{display:none!important}.product .info{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8px!important}.product strong{font-size:23px!important;text-shadow:0 1px #0005}.product span{font-size:15px;margin-top:8px}
+.ticket{padding:5px!important}.ticket-head{background:#777;color:#fff;padding:8px;margin:-5px -5px 4px}.ticket-head h2{font-size:25px!important}.item{padding:8px 6px!important;border-bottom:1px solid #ccc!important;background:#fff}.item-row strong,.item-row span{color:#8d1111;font-size:17px}.actions button{border-radius:2px!important;border:1px solid #aaa!important;background:linear-gradient(#fff,#ddd)!important;color:#111!important}
+.totalbox{border-radius:0!important;background:#f4f4f4!important;color:#111!important;border-top:1px solid #aaa!important}.grand{color:#c5161d!important}
+.btn{border-radius:2px!important;border:1px solid #999!important;box-shadow:none!important}.primary{background:linear-gradient(#55bc63,#168d2b)!important}.orange{background:linear-gradient(#ffb73a,#ee9200)!important}.blue{background:linear-gradient(#4f9edc,#1769aa)!important}.gray{background:linear-gradient(#fff,#d7d7d7)!important;color:#111!important}
+.pos-command{display:grid;gap:5px;padding:5px;background:#ddd}.pos-command .btn,.pos-command a{min-height:72px;display:flex;justify-content:center;align-items:center;text-align:center;font-size:18px;font-weight:800}
+.pos-payment-disabled{filter:grayscale(1);opacity:.5;pointer-events:none}.pos-statusbar{position:fixed;bottom:0;left:0;right:0;height:34px;background:linear-gradient(#3989c7,#1769aa);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:50;font-size:13px}
+body{padding-bottom:34px}.dialog{border-radius:3px!important}
+@media(max-width:1100px){.layout{grid-template-columns:150px minmax(300px,1fr) minmax(420px,1.5fr)!important}.products{grid-template-columns:repeat(2,1fr)!important}}
+@media(max-width:820px){.layout{grid-template-columns:1fr!important}.pos-command{grid-template-columns:repeat(3,1fr)}.categories{grid-template-columns:repeat(3,1fr)!important}.products{grid-template-columns:repeat(2,1fr)!important}.pos-statusbar{position:static}body{padding-bottom:0}}

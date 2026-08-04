@@ -1,0 +1,42 @@
+/* CherryHouse v30.3.5.4 — mobile product detail natural image fix.
+   Loaded as a unique final stylesheet so old cached rules cannot override it. */
+@media (max-width: 700px) {
+  .qrx-detail-sheet {
+    height: auto !important;
+    max-height: 94dvh !important;
+    overflow-y: auto !important;
+  }
+
+  .qrx-detail-media {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    padding: 12px !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #eee7dc !important;
+  }
+
+  .qrx-detail-media img {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 48dvh !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+  }
+
+  .qrx-detail-placeholder {
+    width: 100% !important;
+    min-height: 260px !important;
+  }
+}

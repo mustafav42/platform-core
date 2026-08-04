@@ -1,0 +1,61 @@
+/* CherryHouse POS 5.0 - Waiter Workspace UI v2.1 */
+@media (min-width: 901px) {
+  html,body.chv4{height:100%;min-height:100%;overflow:hidden}
+  .v4-order-layout{
+    height:calc(100dvh - 66px)!important;
+    min-height:0!important;
+    padding-bottom:0!important;
+    overflow:hidden!important;
+    grid-template-columns:220px minmax(0,1fr) 374px!important;
+  }
+  .v4-category-rail,.v4-product-zone,.ch-waiter-ticket{height:100%!important;min-height:0!important}
+  .v4-category-rail nav{padding:10px 12px 18px!important}
+  .v4-category-rail nav a{
+    min-height:48px!important;
+    padding:0 14px!important;
+    display:flex!important;
+    align-items:center!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+  }
+  .v4-category-rail nav a span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .v4-product-zone{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+  .v4-product-zone>.v4-work-head,.v4-product-zone>.v4-mobile-view-switch{flex:0 0 auto}
+  .v4-product-grid{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+    align-content:start!important;
+    padding-bottom:20px!important;
+    scrollbar-gutter:stable;
+  }
+  .v4-product-grid::-webkit-scrollbar{width:7px}
+  .v4-product-grid::-webkit-scrollbar-thumb{background:#c3cad4;border-radius:999px}
+  .ch-waiter-ticket{max-height:none!important}
+  .ch-ticket-scroll{padding-bottom:16px!important}
+}
+
+.v4-category-rail nav a{line-height:1.15}
+.v4-product-card{transition:transform .09s ease,border-color .12s ease,box-shadow .12s ease,background-color .12s ease}
+.v4-product-card.is-tapped{transform:scale(.975)}
+.v4-product-card.has-selection{border-color:#f36b27!important;box-shadow:0 0 0 2px rgba(243,107,39,.13),0 9px 24px rgba(15,23,42,.08)!important}
+.v4-product-card.is-saving{cursor:wait}
+.v4-product-card.is-error{animation:chProductError .28s ease}
+@keyframes chProductError{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+[data-pending-list]{display:grid;gap:8px}
+[data-pending-list] .v4-line{margin-bottom:0!important}
+[data-pending-empty][hidden],[data-clear-order-form][hidden]{display:none!important}
+.ch-pos-toast{position:fixed;left:50%;bottom:22px;z-index:9999;transform:translate(-50%,18px);opacity:0;background:#17263e;color:#fff;padding:11px 15px;border-radius:12px;font-weight:800;font-size:13px;box-shadow:0 16px 40px rgba(15,23,42,.25);transition:.18s ease;pointer-events:none}
+.ch-pos-toast.show{transform:translate(-50%,0);opacity:1}
+.ch-pos-toast.error{background:#b42318}
+
+@media (max-width: 1200px) and (min-width: 901px){
+  .v4-order-layout{grid-template-columns:194px minmax(0,1fr) 350px!important}
+}
+@media (max-width: 900px){
+  body.chv4{min-height:100dvh}
+  .v4-category-rail nav a{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+  .v4-category-rail nav a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}

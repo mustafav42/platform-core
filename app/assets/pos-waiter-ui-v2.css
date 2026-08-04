@@ -1,0 +1,36 @@
+/* CherryHouse POS 5.0 - Waiter Workspace UI v2 */
+@media (min-width: 901px) {
+  .v4-order-layout{height:calc(100vh - 66px);min-height:0;overflow:hidden;grid-template-columns:182px minmax(0,1fr) 370px}
+  .v4-category-rail{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .v4-category-rail .v4-rail-head{flex:0 0 auto}
+  .v4-category-rail nav{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:18px;scrollbar-gutter:stable}
+  .v4-category-rail nav::-webkit-scrollbar,.ch-ticket-scroll::-webkit-scrollbar{width:7px}
+  .v4-category-rail nav::-webkit-scrollbar-thumb,.ch-ticket-scroll::-webkit-scrollbar-thumb{background:#75839a;border-radius:999px}
+  .v4-category-rail nav::-webkit-scrollbar-track{background:transparent}
+  .v4-product-zone{height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+  .ch-waiter-ticket{height:100%;min-height:0;display:flex!important;flex-direction:column;overflow:hidden;background:#fff;border-left:1px solid #e7ebf0}
+  .ch-ticket-header{flex:0 0 auto;padding:18px 18px 12px!important;border-bottom:1px solid #eef1f5}
+  .ch-ticket-actions{flex:0 0 auto;padding:14px 16px;border-bottom:1px solid #edf0f4;background:#fff;display:grid;gap:10px}
+  .ch-ticket-grand-total{display:flex;align-items:center;justify-content:space-between;min-height:72px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#17263e,#0f1c31);color:#fff}
+  .ch-ticket-grand-total span{display:grid;gap:3px}
+  .ch-ticket-grand-total span b{font-size:18px}
+  .ch-ticket-grand-total span small{font-size:12px;color:#b9c3d3}
+  .ch-ticket-grand-total strong{font-size:25px;color:#ffb17f;white-space:nowrap}
+  .ch-send-order,.ch-clear-order{min-height:50px;border-radius:14px!important;font-size:16px!important}
+  .ch-ticket-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px 22px!important;scrollbar-gutter:stable}
+  .ch-ticket-footer{flex:0 0 auto;display:flex!important;justify-content:space-between;gap:14px;padding:10px 16px 12px!important;border-top:1px solid #edf0f4;background:#fff;color:#667085;font-size:12px}
+  .ch-ticket-footer span{display:flex;gap:7px}.ch-ticket-footer b{color:#172033}
+  .ch-waiter-ticket .v4-line{border-radius:13px;margin-bottom:8px;padding:10px 11px}
+  .ch-waiter-ticket .v4-line-actions{margin-top:8px}
+}
+
+@media (max-width: 900px) {
+  .v4-category-rail nav{max-height:38vh;overflow-y:auto;overscroll-behavior:contain}
+  .ch-waiter-ticket{display:flex!important;flex-direction:column;min-height:calc(100dvh - 120px);overflow:hidden}
+  .ch-ticket-header,.ch-ticket-actions,.ch-ticket-footer{flex:0 0 auto}
+  .ch-ticket-actions{padding:12px;display:grid;gap:9px;background:#fff;border-bottom:1px solid #edf0f4}
+  .ch-ticket-grand-total{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-radius:14px;background:#17263e;color:#fff}
+  .ch-ticket-grand-total span{display:grid}.ch-ticket-grand-total small{color:#bcc6d5}.ch-ticket-grand-total strong{font-size:21px;color:#ffb17f}
+  .ch-ticket-scroll{flex:1 1 auto;min-height:0;max-height:52dvh;overflow-y:auto;overscroll-behavior:contain}
+  .ch-ticket-footer{display:flex!important;justify-content:space-between;padding:10px 14px!important;background:#fff;border-top:1px solid #edf0f4}
+}

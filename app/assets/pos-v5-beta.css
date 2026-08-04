@@ -1,0 +1,18 @@
+/* CherryHouse POS 5.0 Beta — workflow layer */
+.ch-pos5 .v4-alert.success{background:#eaf7ee;color:#166534;border:1px solid #b9e3c5}
+.ch-pos5 button.is-processing{cursor:wait;opacity:.72;pointer-events:none}
+.ch-pos5 button.is-processing::after{content:' · İşleniyor';font-size:.82em}
+.ch-pos5 [data-table-grid][data-last-sync]::after{content:'Masalar otomatik güncelleniyor';position:fixed;right:16px;bottom:14px;padding:7px 10px;border-radius:999px;background:rgba(23,35,56,.9);color:#fff;font-size:11px;z-index:20;opacity:0;transform:translateY(5px);animation:chSync 1.2s ease}
+@keyframes chSync{0%,100%{opacity:0;transform:translateY(5px)}20%,75%{opacity:1;transform:none}}
+.ch-pos5 .ch-payment-updated{animation:chPaymentPulse 1.6s ease}
+@keyframes chPaymentPulse{0%,100%{box-shadow:none}25%,70%{box-shadow:0 0 0 5px rgba(21,128,61,.18)}}
+.ch-pos5 .ch-pay-screen{height:calc(100vh - 68px);overflow:hidden}
+.ch-pos5 .ch-pay-grid{height:100%;min-height:0}
+.ch-pos5 .ch-pay-products,.ch-pos5 .ch-pay-center,.ch-pos5 .ch-pay-methods{min-height:0;overflow:auto;overscroll-behavior:contain}
+.ch-pos5 .ch-pay-header{position:sticky;top:0;z-index:8}
+.ch-pos5 .ch-pay-methods .ch-pay-submit,.ch-pos5 .cashier-submit{position:sticky;bottom:0;z-index:4;box-shadow:0 -10px 22px rgba(15,23,42,.08)}
+.ch-pos5 .v4-ticket footer{position:sticky;bottom:0;z-index:3}
+.ch-pos5 .v4-category-rail nav,.ch-pos5 .v4-product-zone,.ch-pos5 .v4-ticket-body{overscroll-behavior:contain;scrollbar-width:thin}
+.ch-pos5 .v4-product-card:focus-visible,.ch-pos5 .v4-table-card a:focus-visible,.ch-pos5 button:focus-visible{outline:3px solid rgba(223,107,47,.32);outline-offset:2px}
+@media(max-width:1100px){.ch-pos5 .ch-pay-screen{height:calc(100vh - 60px)}.ch-pos5 .ch-pay-grid{grid-template-columns:minmax(270px,32%) minmax(330px,1fr) minmax(230px,27%)}}
+@media(max-width:820px){.ch-pos5 .ch-pay-screen{height:auto;min-height:calc(100vh - 60px);overflow:auto}.ch-pos5 .ch-pay-grid{height:auto}.ch-pos5 .ch-pay-products,.ch-pos5 .ch-pay-center,.ch-pos5 .ch-pay-methods{overflow:visible}.ch-pos5 [data-table-grid][data-last-sync]::after{display:none}}

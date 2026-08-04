@@ -1,0 +1,8 @@
+CherryHouse v29.0.2
+1) ZIP içeriğini sitenin ana dizinine yükleyin.
+2) /update/v29.0.2/ adresini açın.
+3) Düzeltmeyi Uygula butonuna basın.
+4) QR menüyü ?v=29002 ekleyerek veya gizli sekmede açın.
+
+Bu paket index.php ve app/assets/qrx-premium-menu.css dosyalarını doğrudan değiştirir.
+Yedekler storage/backups/ altında tutulur.

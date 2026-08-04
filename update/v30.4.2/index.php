@@ -1,0 +1,12 @@
+<?php
+declare(strict_types=1);
+$root=dirname(__DIR__,2);$payload=__DIR__.'/payload';$done=[];$errors=[];
+if($_SERVER['REQUEST_METHOD']==='POST'){
+ try{
+  $backup=$root.'/storage/backups/v30.4.2-'.date('Ymd-His');
+  $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($payload,FilesystemIterator::SKIP_DOTS));
+  foreach($it as $file){if(!$file->isFile())continue;$rel=str_replace('\\','/',substr($file->getPathname(),strlen($payload)+1));$dst=$root.'/'.$rel;if(is_file($dst)){@mkdir(dirname($backup.'/'.$rel),0775,true);if(!copy($dst,$backup.'/'.$rel))throw new RuntimeException('Yedek alınamadı: '.$rel);}@mkdir(dirname($dst),0775,true);if(!copy($file->getPathname(),$dst))throw new RuntimeException('Dosya yazılamadı: '.$rel);$done[]=$rel;}
+  if(function_exists('opcache_reset'))@opcache_reset();
+ }catch(Throwable $e){$errors[]=$e->getMessage();}
+}
+?><!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CherryHouse v30.4.2</title><style>body{font-family:Inter,Arial;background:#f3f1ed;color:#211d1a;min-height:100vh;display:grid;place-items:center;margin:0}.box{width:min(760px,calc(100% - 32px));background:#fff;border:1px solid #e2ddd6;border-radius:24px;padding:30px;box-shadow:0 20px 60px #211d1a18}small{font-weight:900;letter-spacing:.12em;color:#92263a}h1{margin:7px 0}.note,.ok,.err{padding:13px 15px;border-radius:12px;margin:14px 0}.note{background:#f7f3ee}.ok{background:#e9f8ef;color:#17683b}.err{background:#fff0f0;color:#a52c38}button,a{display:inline-block;border:0;border-radius:12px;padding:13px 17px;font-weight:800;text-decoration:none;cursor:pointer}button{background:#92263a;color:#fff}a{background:#211d1a;color:#fff;margin:4px}</style></head><body><main class="box"><small>QR EXPERIENCE FINAL SPRINT</small><h1>CherryHouse v30.4.2 LTS</h1><p>QR Kalite Kontrolü, ürün bilgi kapsamı özeti ve QR Studio final bağlantılarını ekler.</p><div class="note">Ürünler, QR ayarları, tema ve canlı menü içeriği değiştirilmez. Değişen dosyalar otomatik yedeklenir.</div><?php foreach($errors as $e):?><div class="err"><?=htmlspecialchars($e,ENT_QUOTES,'UTF-8')?></div><?php endforeach;?><?php if($done):?><div class="ok"><b>Güncelleme başarılı.</b><br><?=count($done)?> dosya uygulandı.</div><a href="../../admin/enterprise/qr-inspector.php">QR Kontrolünü Aç</a><a href="../../admin/qr-experience/">QR Studio</a><?php else:?><form method="post"><button>QR Final Sprint’i Uygula</button></form><?php endif;?></main></body></html>

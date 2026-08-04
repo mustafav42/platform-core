@@ -1,0 +1,1 @@
+(()=>{const root=document.querySelector('[data-page="dashboard"]');if(!root)return;const refresh=()=>{document.querySelectorAll('[data-live-dashboard]').forEach(el=>el.classList.add('is-live'));};refresh();})();

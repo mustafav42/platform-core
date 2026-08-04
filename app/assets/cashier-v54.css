@@ -1,0 +1,48 @@
+.chv4-cashier:has(.ch-pay-screen)>.v4-topbar,.chv4-cashier:has(.ch-pay-screen)>.v4-quick-dock{display:none!important}
+:root{--navy:#0f1d33;--blue:#1677df;--red:#e1292f;--line:#dde4ec;--bg:#f4f7fb;--text:#152033}*{box-sizing:border-box}.ch-pay-screen{min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.ch-pay-header{height:70px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px}.ch-pay-header>div{display:flex;align-items:center;gap:24px}.ch-pay-header small{opacity:.75}.ch-pay-logo{font-size:22px}.ch-pay-logo span{color:#ff4b55}.ch-pay-back{color:#fff;text-decoration:none;background:#243752;padding:14px 18px;border-radius:10px;font-weight:800}.ch-pay-grid{height:calc(100vh - 70px);display:grid;grid-template-columns:39% 34% 27%;grid-template-rows:1fr 96px;background:#fff}.ch-pay-products,.ch-pay-center,.ch-pay-methods{padding:20px;border-right:1px solid var(--line);min-height:0}.ch-pay-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ch-pay-section-head h2,.ch-pay-methods h2{margin:0;font-size:20px}.ch-pay-section-head button{border:0;background:var(--blue);color:#fff;padding:13px 17px;border-radius:10px;font-size:16px;font-weight:800}.ch-pay-product-list{display:flex;flex-direction:column;gap:8px;overflow:auto;height:calc(100% - 112px)}.ch-pay-product{min-height:72px;border:1px solid var(--line);border-left:5px solid #ffd685;background:#fff;border-radius:10px;display:grid;grid-template-columns:42px 1fr auto 36px;gap:10px;align-items:center;padding:10px 14px;text-align:left;font-size:16px}.ch-pay-product .qty{font-size:20px;font-weight:900}.ch-pay-product .name{font-weight:800}.ch-pay-product small{display:block;color:#718096;margin-top:4px}.ch-pay-product .line{font-weight:900}.ch-pay-product .picked{display:none;background:var(--blue);color:#fff;border-radius:50%;width:32px;height:32px;place-items:center;font-weight:900}.ch-pay-product.selected{background:#eaf4ff;border-color:#80bfff;border-left-color:var(--blue)}.ch-pay-product.selected .picked{display:grid}.ch-pay-product-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ch-pay-product-actions button,.ch-pay-tools button,.ch-pay-tools a{min-height:52px;border:1px solid var(--line);background:#fff;border-radius:10px;font-weight:800;color:var(--text);display:flex;align-items:center;justify-content:center;text-decoration:none}.ch-pay-center{text-align:center;display:grid;grid-template-columns:92px 1fr;grid-template-rows:auto auto 1fr auto;gap:10px 12px}.ch-pay-center>p{grid-column:1/3;margin:0;text-transform:uppercase;font-weight:800;color:#53657a}.ch-pay-center output{grid-column:1/3;font-size:56px;font-weight:900;padding:8px 0}.ch-pay-presets{display:grid;grid-template-rows:repeat(6,1fr);gap:7px}.ch-pay-presets button,.ch-pay-keypad button{border:1px solid var(--line);border-radius:8px;font-size:24px;font-weight:800;background:#fff}.ch-pay-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.ch-pay-keypad button{background:linear-gradient(#2d8af0,#116bd1);color:#fff;border:0;font-size:30px}.ch-pay-tools{grid-column:1/3;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ch-pay-methods{display:flex;flex-direction:column;gap:8px}.ch-pay-methods>button:not(.ch-pay-complete){min-height:64px;border:1px solid var(--line);background:#fff;border-radius:10px;font-size:18px;font-weight:800;text-align:left;padding:0 20px}.ch-pay-methods>button.active{outline:3px solid #8dc6ff;background:#edf7ff}.ch-pay-method-sums{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:auto}.ch-pay-method-sums label{font-size:12px;color:#6d7d90}.ch-pay-method-sums input{width:100%;border:1px solid var(--line);padding:8px;border-radius:7px;font-weight:800;background:#f8fafc}.ch-pay-complete{min-height:72px;border:0;border-radius:10px;background:var(--red);color:#fff;font-size:20px;font-weight:900}.ch-pay-complete:disabled{opacity:.45}.ch-pay-totals{grid-column:1/4;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;border-top:1px solid var(--line);background:#fff;padding:0 30px}.ch-pay-totals span{font-size:14px;text-transform:uppercase;color:#526278}.ch-pay-totals b{display:block;font-size:28px;color:var(--text);margin-top:5px}.ch-pay-totals span:nth-child(2) b{color:#20a646}.ch-pay-totals span:nth-child(3) b{color:var(--red)}.ch-product-drawer{position:fixed;left:0;top:0;bottom:0;width:min(760px,80vw);background:#fff;z-index:101;transform:translateX(-105%);transition:.22s;box-shadow:12px 0 40px #0003;padding:20px;overflow:auto}.ch-product-drawer.open{transform:none}.ch-drawer-mask{position:fixed;inset:0;background:#0006;z-index:100;display:none}.ch-drawer-mask.open{display:block}.drawer-head{display:flex;justify-content:space-between;align-items:center}.drawer-head button{font-size:32px;border:0;background:none}.drawer-categories{display:flex;gap:8px;overflow:auto;padding:12px 0}.drawer-categories a{white-space:nowrap;padding:12px 16px;border-radius:10px;background:#eef2f7;color:#24344c;text-decoration:none;font-weight:800}.drawer-categories a.active{background:var(--navy);color:#fff}.drawer-products{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.drawer-products button{width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px;text-align:left}.drawer-products b,.drawer-products span,.drawer-products small{display:block}.drawer-products span{margin:8px 0;font-weight:900}.drawer-products small{color:var(--blue);font-weight:800}@media(max-width:1100px){.ch-pay-grid{grid-template-columns:42% 33% 25%}.ch-pay-methods>button:not(.ch-pay-complete){font-size:15px;padding:0 12px}.ch-pay-center output{font-size:42px}}@media(max-width:900px){.ch-pay-grid{height:auto;grid-template-columns:1fr}.ch-pay-products,.ch-pay-center,.ch-pay-methods{border-right:0;border-bottom:1px solid var(--line)}.ch-pay-totals{grid-column:1}.ch-pay-product-list{height:auto;max-height:420px}.ch-pay-screen{overflow:auto}}
+
+/* v5.3.1 usability hotfix */
+.v4-cash-layout.tables-mode{grid-template-columns:88px minmax(0,1fr)!important}
+.v4-cash-layout.tables-mode .cashier-tables-only{grid-column:2!important;width:100%!important;max-width:none!important}
+.cashier-tables-only .v4-table-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.cashier-tables-only .v4-table-card{min-height:170px}
+
+/* Order ticket readability */
+.v4-ticket.cashier{background:#f7f9fc;border-left:1px solid #dfe6ee}
+.v4-ticket.cashier header{padding:20px;border-bottom:1px solid #dfe6ee;background:#fff}
+.v4-ticket.cashier .cashier-items{padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.cashier-pay-item{width:100%;min-height:76px;border:1px solid #dbe3ec;border-radius:12px;background:#fff;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 14px;text-align:left;color:#17243a;box-shadow:0 2px 8px rgba(15,29,51,.05)}
+.cashier-pay-item .cashier-item-check{width:28px;height:28px;border-radius:8px;background:#edf2f7;color:#93a1b2;display:grid;place-items:center;font-weight:900}
+.cashier-pay-item .cashier-item-main{min-width:0}
+.cashier-pay-item .cashier-item-main strong{display:block;font-size:16px;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+.cashier-pay-item .cashier-item-main small{display:block;margin-top:5px;color:#6c7b8d;font-size:13px;line-height:1.3}
+.cashier-pay-item .cashier-item-price{font-size:17px;font-weight:900;white-space:nowrap;color:#152033}
+.cashier-pay-item.is-partial{border-color:#85bdf4;background:#f1f8ff}
+.cashier-pay-item.is-paid{opacity:.55;background:#eef7f0}
+.v4-ticket.cashier footer{background:#fff;border-top:1px solid #dfe6ee}
+.cashier-payment-entry .cashier-mode-btn{min-height:66px;border-radius:12px;font-size:17px}
+
+/* Submit button remains visible and text never drops below */
+.ch-pay-methods{min-height:0;overflow:auto;padding-bottom:12px}
+.ch-pay-complete{flex:0 0 76px;min-height:76px;display:flex;align-items:center;justify-content:center;line-height:1.15;padding:12px 16px;white-space:normal;text-align:center;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 18px rgba(255,255,255,.95)}
+.ch-pay-method-sums{margin-top:8px}
+
+/* Stable product drawer */
+.ch-product-drawer{display:flex;flex-direction:column;overflow:hidden}
+.drawer-head{flex:0 0 auto;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.drawer-head small{font-size:11px;font-weight:900;color:#718096;letter-spacing:.08em}
+.drawer-head h2{margin:3px 0 0}
+.drawer-categories{flex:0 0 auto}
+.drawer-categories button{border:0;white-space:nowrap;padding:13px 18px;border-radius:10px;background:#eef2f7;color:#24344c;font-weight:800;font-size:15px}
+.drawer-categories button.active{background:var(--navy);color:#fff}
+.drawer-products{overflow:auto;align-content:start;padding:4px 2px 20px}
+.drawer-products form[hidden]{display:none!important}
+.drawer-products button{cursor:pointer}
+.drawer-products button:active{transform:scale(.98)}
+
+@media(max-width:1100px){
+ .ch-pay-grid{grid-template-columns:40% 33% 27%}
+ .ch-pay-methods{padding:14px}
+ .ch-pay-methods>button:not(.ch-pay-complete){min-height:56px}
+ .ch-pay-complete{font-size:17px;min-height:72px}
+}

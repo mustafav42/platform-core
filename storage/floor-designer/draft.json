@@ -1,0 +1,61 @@
+{
+    "version": 431,
+    "saved_at": "2026-07-26T15:26:38+03:00",
+    "saved_by": 0,
+    "tables": [
+        {
+            "id": 1,
+            "x": 20,
+            "y": 20,
+            "w": 130,
+            "h": 90,
+            "shape": "round",
+            "name": "Masa 1",
+            "capacity": 4
+        },
+        {
+            "id": 3,
+            "x": 20,
+            "y": 20,
+            "w": 130,
+            "h": 90,
+            "shape": "rectangle",
+            "name": "Masa 2",
+            "capacity": 4
+        },
+        {
+            "id": 4,
+            "x": 20,
+            "y": 20,
+            "w": 130,
+            "h": 90,
+            "shape": "rectangle",
+            "name": "Masa 3",
+            "capacity": 4
+        },
+        {
+            "id": 5,
+            "x": 20,
+            "y": 20,
+            "w": 130,
+            "h": 90,
+            "shape": "rectangle",
+            "name": "Masa 4",
+            "capacity": 4
+        },
+        {
+            "id": 2,
+            "x": 20,
+            "y": 20,
+            "w": 130,
+            "h": 90,
+            "shape": "rectangle",
+            "name": "Masa 2",
+            "capacity": 4
+        }
+    ],
+    "objects": [],
+    "layers": {
+        "architectureLocked": false
+    }
+}

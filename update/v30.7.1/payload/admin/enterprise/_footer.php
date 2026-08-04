@@ -1,0 +1,1 @@
+</main><footer class="ch-footer">CherryHouse Control Center · Design System Preview · <?=date('Y')?></footer></div></div><div class="toast-stack" data-toast-stack></div><script src="assets/cherry-ui.js?v=3071"></script><script src="assets/admin-ui.js?v=3071"></script><script src="assets/enterprise.js?v=3071"></script></body></html>

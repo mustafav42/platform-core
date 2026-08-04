@@ -1,0 +1,500 @@
+<?php
+declare(strict_types=1);
+
+require dirname(__DIR__, 2) . '/app/bootstrap.php';
+
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', dirname(__DIR__, 2));
+}
+if (!is_file(BASE_PATH . '/storage/installed.lock')) {
+    header('Location: ../../install/');
+    exit;
+}
+
+$enterpriseIsAdmin = !empty($_SESSION['admin_id']);
+$enterpriseIsManager = (string)($_SESSION['staff_role'] ?? '') === 'manager';
+if (!$enterpriseIsAdmin && !$enterpriseIsManager) {
+    header('Location: ../');
+    exit;
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+function ent_e(mixed $value): string
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
+
+function ent_db(): PDO
+{
+    if (function_exists('db')) {
+        return db();
+    }
+    if (class_exists('App\\Core\\Database')) {
+        return App\Core\Database::connection();
+    }
+    throw new RuntimeException('Veritabanı bağlantısı bulunamadı.');
+}
+
+function ent_table_exists(string $table): bool
+{
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+        return false;
+    }
+    try {
+        $stmt = ent_db()->query("SHOW TABLES LIKE " . ent_db()->quote($table));
+        return (bool)$stmt->fetchColumn();
+    } catch (Throwable) {
+        return false;
+    }
+}
+
+function ent_columns(string $table): array
+{
+    if (!ent_table_exists($table)) {
+        return [];
+    }
+    try {
+        $rows = ent_db()->query("SHOW COLUMNS FROM `{$table}`")->fetchAll(PDO::FETCH_ASSOC);
+        return array_column($rows, 'Field');
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function ent_count(string $table, string $where = '1=1'): int
+{
+    if (!ent_table_exists($table)) {
+        return 0;
+    }
+    try {
+        return (int)ent_db()->query("SELECT COUNT(*) FROM `{$table}` WHERE {$where}")->fetchColumn();
+    } catch (Throwable) {
+        return 0;
+    }
+}
+
+function ent_verify_csrf(): void
+{
+    $session = (string)($_SESSION['csrf_token'] ?? '');
+    $posted = (string)($_POST['csrf_token'] ?? '');
+    if ($session === '' || !hash_equals($session, $posted)) {
+        throw new RuntimeException('Oturum doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.');
+    }
+}
+
+function ent_redirect(string $url): never
+{
+    header('Location: ' . $url);
+    exit;
+}
+
+function ent_setting(string $key, string $default = ''): string
+{
+    if (function_exists('setting')) {
+        return (string)setting($key, $default);
+    }
+    if (!ent_table_exists('settings')) {
+        return $default;
+    }
+    try {
+        $stmt = ent_db()->prepare('SELECT setting_value FROM settings WHERE setting_key = ? LIMIT 1');
+        $stmt->execute([$key]);
+        $value = $stmt->fetchColumn();
+        return $value === false ? $default : (string)$value;
+    } catch (Throwable) {
+        return $default;
+    }
+}
+
+function ent_media_install(): void
+{
+    ent_db()->exec("CREATE TABLE IF NOT EXISTS enterprise_media (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        relative_path VARCHAR(500) NOT NULL,
+        mime_type VARCHAR(100) NOT NULL,
+        file_size BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        width INT UNSIGNED NULL,
+        height INT UNSIGNED NULL,
+        alt_text VARCHAR(255) NOT NULL DEFAULT '',
+        folder VARCHAR(100) NOT NULL DEFAULT 'Genel',
+        created_by BIGINT UNSIGNED NULL,
+        is_favorite TINYINT(1) NOT NULL DEFAULT 0,
+        tags VARCHAR(500) NOT NULL DEFAULT '',
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY uq_enterprise_media_path (relative_path),
+        KEY idx_enterprise_media_created (created_at),
+        KEY idx_enterprise_media_folder (folder)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+}
+
+function ent_media_upgrade(): void
+{
+    ent_media_install();
+    $columns = ent_columns('enterprise_media');
+    $changes = [
+        'is_favorite' => "ADD COLUMN is_favorite TINYINT(1) NOT NULL DEFAULT 0 AFTER created_by",
+        'tags' => "ADD COLUMN tags VARCHAR(500) NOT NULL DEFAULT '' AFTER is_favorite",
+        'updated_at' => "ADD COLUMN updated_at DATETIME NULL AFTER created_at",
+        'original_relative_path' => "ADD COLUMN original_relative_path VARCHAR(500) NULL AFTER relative_path",
+        'edited_at' => "ADD COLUMN edited_at DATETIME NULL AFTER updated_at",
+    ];
+    foreach ($changes as $name => $sql) {
+        if (!in_array($name, $columns, true)) ent_db()->exec("ALTER TABLE enterprise_media {$sql}");
+    }
+}
+
+function ent_media_usage(string $path): array
+{
+    $pdo = ent_db(); $used = [];
+    $checks = [
+        ['products','image_path','Ürün'], ['categories','image_path','Kategori'],
+    ];
+    foreach ($checks as [$table,$column,$label]) {
+        if (ent_table_exists($table) && in_array($column, ent_columns($table), true)) {
+            $q=$pdo->prepare("SELECT COUNT(*) FROM `{$table}` WHERE `{$column}`=? OR `{$column}`=?");
+            $q->execute([$path,'/'.$path]); $count=(int)$q->fetchColumn();
+            if ($count>0) $used[]=$label.' ('.$count.')';
+        }
+    }
+    if (ent_table_exists('settings')) {
+        $q=$pdo->prepare('SELECT COUNT(*) FROM settings WHERE setting_value=? OR setting_value=?');
+        $q->execute([$path,'/'.$path]); $count=(int)$q->fetchColumn();
+        if($count>0) $used[]='QR Studio / Ayarlar ('.$count.')';
+    }
+    return $used;
+}
+
+function ent_media_delete(int $id, bool $force=false): void
+{
+    $pdo=ent_db(); $q=$pdo->prepare('SELECT * FROM enterprise_media WHERE id=? LIMIT 1');$q->execute([$id]);
+    $row=$q->fetch(PDO::FETCH_ASSOC); if(!$row) throw new RuntimeException('Medya kaydı bulunamadı.');
+    $path=(string)$row['relative_path']; $usage=ent_media_usage($path);
+    if($usage && !$force) throw new RuntimeException('Bu görsel kullanılıyor: '.implode(', ',$usage).'. Önce ilgili kayıtlardan kaldırın.');
+    if(!str_starts_with($path,'storage/uploads/media/')) throw new RuntimeException('Güvenli olmayan dosya yolu.');
+    $pdo->prepare('DELETE FROM enterprise_media WHERE id=?')->execute([$id]);
+    foreach([$path, preg_replace('~(\.[^.]+)$~','-thumb$1',$path)??''] as $rel){$full=BASE_PATH.'/'.ltrim($rel,'/');if(is_file($full))@unlink($full);}
+}
+
+function ent_media_root(): string
+{
+    return BASE_PATH . '/storage/uploads/media';
+}
+
+function ent_media_url(string $relativePath): string
+{
+    return '../../' . ltrim($relativePath, '/');
+}
+
+function ent_media_upload(array $file, string $folder, string $altText = ''): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Dosya yüklenemedi. Hata kodu: ' . (int)($file['error'] ?? -1));
+    }
+    $size = (int)($file['size'] ?? 0);
+    if ($size < 1 || $size > 32 * 1024 * 1024) {
+        throw new RuntimeException('Her görsel en fazla 32 MB olabilir.');
+    }
+    $tmp = (string)($file['tmp_name'] ?? '');
+    if ($tmp === '' || !is_uploaded_file($tmp)) {
+        throw new RuntimeException('Geçersiz yükleme kaynağı.');
+    }
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = (string)$finfo->file($tmp);
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+    if (!isset($extensions[$mime])) {
+        throw new RuntimeException('Yalnızca JPG, PNG ve WebP görseller kabul edilir.');
+    }
+    $dimensions = @getimagesize($tmp);
+    if ($dimensions === false) {
+        throw new RuntimeException('Dosya geçerli bir görsel değil.');
+    }
+    [$width, $height] = $dimensions;
+    if ($width < 1 || $height < 1 || $width > 12000 || $height > 12000) {
+        throw new RuntimeException('Görsel boyutları geçersiz veya çok büyük.');
+    }
+
+    $folder = trim(preg_replace('/[^\pL\pN _-]+/u', '', $folder) ?? '');
+    $folder = $folder !== '' ? mb_substr($folder, 0, 100, 'UTF-8') : 'Genel';
+    $storageDir = ent_media_root();
+    if (!is_dir($storageDir) && !mkdir($storageDir, 0755, true) && !is_dir($storageDir)) {
+        throw new RuntimeException('Medya klasörü oluşturulamadı.');
+    }
+    $filename = date('Ymd-His') . '-' . bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
+    $destination = $storageDir . '/' . $filename;
+    if (!move_uploaded_file($tmp, $destination)) {
+        throw new RuntimeException('Görsel sunucuya kaydedilemedi.');
+    }
+
+    $relativePath = 'storage/uploads/media/' . $filename;
+    $stmt = ent_db()->prepare('INSERT INTO enterprise_media
+        (filename, original_name, relative_path, mime_type, file_size, width, height, alt_text, folder, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    try {
+        $stmt->execute([
+            $filename,
+            mb_substr((string)($file['name'] ?? $filename), 0, 255, 'UTF-8'),
+            $relativePath,
+            $mime,
+            $size,
+            (int)$width,
+            (int)$height,
+            mb_substr(trim($altText), 0, 255, 'UTF-8'),
+            $folder,
+            !empty($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : null,
+            date('Y-m-d H:i:s'),
+        ]);
+    } catch (Throwable $e) {
+        @unlink($destination);
+        throw $e;
+    }
+    return ['path' => $relativePath, 'name' => $filename];
+}
+
+function ent_media_absolute_path(string $relativePath): string
+{
+    return BASE_PATH . '/' . ltrim($relativePath, '/');
+}
+
+function ent_media_folder_for_path(string $relativePath): string
+{
+    $path = mb_strtolower($relativePath, 'UTF-8');
+    if (str_contains($path, 'branding') || str_contains($path, 'logo') || str_contains($path, 'favicon')) return 'Logo';
+    if (str_contains($path, 'hero')) return 'Hero';
+    if (str_contains($path, 'categor')) return 'Kategoriler';
+    if (str_contains($path, 'product') || str_contains($path, 'urun')) return 'Ürünler';
+    if (str_contains($path, 'banner')) return 'Bannerlar';
+    return 'Genel';
+}
+
+/** Diskte olup medya tablosunda bulunmayan güvenli görselleri içeri alır. */
+function ent_media_sync_storage(): int
+{
+    ent_media_upgrade();
+    $pdo = ent_db();
+    $roots = [
+        BASE_PATH . '/storage/uploads/media',
+        BASE_PATH . '/uploads',
+        BASE_PATH . '/storage/branding',
+    ];
+    $allowed = ['jpg'=>'image/jpeg','jpeg'=>'image/jpeg','png'=>'image/png','webp'=>'image/webp'];
+    $known = $pdo->query('SELECT relative_path FROM enterprise_media')->fetchAll(PDO::FETCH_COLUMN);
+    $known = array_fill_keys(array_map(static fn($v)=>(string)$v, $known), true);
+    $insert = $pdo->prepare('INSERT IGNORE INTO enterprise_media
+        (filename,original_name,relative_path,mime_type,file_size,width,height,alt_text,folder,created_by,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+    $count = 0;
+    foreach ($roots as $root) {
+        if (!is_dir($root)) continue;
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            if (!$file->isFile()) continue;
+            $ext = mb_strtolower($file->getExtension(), 'UTF-8');
+            if (!isset($allowed[$ext])) continue;
+            $full = $file->getPathname();
+            $relative = str_replace('\\','/', ltrim(substr($full, strlen(BASE_PATH)), '/'));
+            if (isset($known[$relative])) continue;
+            $dim = @getimagesize($full);
+            if ($dim === false) continue;
+            $insert->execute([
+                $file->getFilename(), $file->getFilename(), $relative, $allowed[$ext],
+                (int)$file->getSize(), (int)$dim[0], (int)$dim[1], '',
+                ent_media_folder_for_path($relative), null,
+                date('Y-m-d H:i:s', max(1, (int)$file->getMTime())),
+            ]);
+            $known[$relative] = true;
+            $count += $insert->rowCount() > 0 ? 1 : 0;
+        }
+    }
+    return $count;
+}
+
+function ent_media_item_payload(array $row): array
+{
+    $path = (string)$row['relative_path'];
+    $full = ent_media_absolute_path($path);
+    $usage = ent_media_usage($path);
+    return [
+        'id'=>(int)$row['id'], 'name'=>(string)$row['original_name'], 'path'=>$path,
+        'url'=>ent_media_url($path), 'mime'=>(string)$row['mime_type'],
+        'size'=>(int)$row['file_size'], 'size_label'=>ent_human_bytes((int)$row['file_size']),
+        'width'=>(int)$row['width'], 'height'=>(int)$row['height'],
+        'alt'=>(string)$row['alt_text'], 'folder'=>(string)$row['folder'],
+        'tags'=>(string)($row['tags']??''), 'favorite'=>(bool)$row['is_favorite'],
+        'created_at'=>(string)$row['created_at'], 'usage'=>$usage,
+        'used'=>!empty($usage), 'exists'=>is_file($full),
+        'managed'=>str_starts_with($path, 'storage/uploads/media/'),
+    ];
+}
+
+function ent_human_bytes(int $bytes): string
+{
+    if ($bytes < 1024) return $bytes . ' B';
+    if ($bytes < 1048576) return number_format($bytes / 1024, 1, ',', '.') . ' KB';
+    return number_format($bytes / 1048576, 1, ',', '.') . ' MB';
+}
+
+function ent_variant_install(): void
+{
+    $pdo = ent_db();
+    $pdo->exec("CREATE TABLE IF NOT EXISTS variant_groups (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        name VARCHAR(150) NOT NULL,
+        description VARCHAR(255) NOT NULL DEFAULT '',
+        selection_type ENUM('single','multiple') NOT NULL DEFAULT 'single',
+        is_required TINYINT(1) NOT NULL DEFAULT 0,
+        min_select INT UNSIGNED NOT NULL DEFAULT 0,
+        max_select INT UNSIGNED NOT NULL DEFAULT 1,
+        sort_order INT NOT NULL DEFAULT 0,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NULL,
+        PRIMARY KEY (id), KEY idx_variant_groups_sort (sort_order,id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS variant_options (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        group_id BIGINT UNSIGNED NOT NULL,
+        name VARCHAR(150) NOT NULL,
+        price_delta DECIMAL(12,2) NOT NULL DEFAULT 0,
+        sort_order INT NOT NULL DEFAULT 0,
+        is_default TINYINT(1) NOT NULL DEFAULT 0,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NULL,
+        PRIMARY KEY (id), KEY idx_variant_options_group (group_id,sort_order,id),
+        CONSTRAINT fk_variant_options_group FOREIGN KEY (group_id) REFERENCES variant_groups(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS product_variant_groups (
+        product_id BIGINT UNSIGNED NOT NULL,
+        group_id BIGINT UNSIGNED NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (product_id,group_id), KEY idx_pvg_group (group_id),
+        CONSTRAINT fk_pvg_group FOREIGN KEY (group_id) REFERENCES variant_groups(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+}
+
+/** CherryHouse v30.3 Aurora platform helpers. */
+function ent_platform_install(): void
+{
+    $pdo = ent_db();
+    $pdo->exec("CREATE TABLE IF NOT EXISTS enterprise_audit_logs (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        actor_type VARCHAR(30) NOT NULL DEFAULT 'admin',
+        actor_id BIGINT UNSIGNED NULL,
+        actor_name VARCHAR(190) NOT NULL DEFAULT '',
+        event_key VARCHAR(120) NOT NULL,
+        module_name VARCHAR(100) NOT NULL DEFAULT '',
+        entity_type VARCHAR(100) NOT NULL DEFAULT '',
+        entity_id VARCHAR(100) NOT NULL DEFAULT '',
+        summary VARCHAR(255) NOT NULL,
+        old_values LONGTEXT NULL,
+        new_values LONGTEXT NULL,
+        ip_address VARCHAR(64) NOT NULL DEFAULT '',
+        user_agent VARCHAR(500) NOT NULL DEFAULT '',
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        KEY idx_ent_audit_created (created_at),
+        KEY idx_ent_audit_event (event_key),
+        KEY idx_ent_audit_entity (entity_type, entity_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS enterprise_notifications (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        notification_key VARCHAR(150) NOT NULL,
+        title VARCHAR(190) NOT NULL,
+        message VARCHAR(500) NOT NULL DEFAULT '',
+        level VARCHAR(20) NOT NULL DEFAULT 'info',
+        target_url VARCHAR(500) NOT NULL DEFAULT '',
+        is_read TINYINT(1) NOT NULL DEFAULT 0,
+        created_at DATETIME NOT NULL,
+        read_at DATETIME NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY uq_ent_notification_key (notification_key),
+        KEY idx_ent_notification_read (is_read, created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+}
+
+function ent_actor(): array
+{
+    $id = !empty($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : (!empty($_SESSION['staff_id']) ? (int)$_SESSION['staff_id'] : null);
+    $type = !empty($_SESSION['admin_id']) ? 'admin' : 'staff';
+    $name = trim((string)($_SESSION['admin_name'] ?? $_SESSION['staff_name'] ?? $_SESSION['name'] ?? 'Yönetici'));
+    return ['type' => $type, 'id' => $id, 'name' => $name !== '' ? $name : 'Yönetici'];
+}
+
+function ent_audit(string $eventKey, string $summary, array $context = []): void
+{
+    try {
+        ent_platform_install();
+        $actor = ent_actor();
+        $stmt = ent_db()->prepare('INSERT INTO enterprise_audit_logs
+            (actor_type, actor_id, actor_name, event_key, module_name, entity_type, entity_id, summary, old_values, new_values, ip_address, user_agent, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $actor['type'], $actor['id'], $actor['name'], $eventKey,
+            mb_substr((string)($context['module'] ?? ''), 0, 100, 'UTF-8'),
+            mb_substr((string)($context['entity_type'] ?? ''), 0, 100, 'UTF-8'),
+            mb_substr((string)($context['entity_id'] ?? ''), 0, 100, 'UTF-8'),
+            mb_substr($summary, 0, 255, 'UTF-8'),
+            isset($context['old']) ? json_encode($context['old'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null,
+            isset($context['new']) ? json_encode($context['new'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null,
+            mb_substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 64, 'UTF-8'),
+            mb_substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500, 'UTF-8'),
+            date('Y-m-d H:i:s'),
+        ]);
+    } catch (Throwable) {
+        // Audit logging must never block the requested business operation.
+    }
+}
+
+function ent_notification_upsert(string $key, string $title, string $message, string $level = 'info', string $url = ''): void
+{
+    try {
+        ent_platform_install();
+        $stmt = ent_db()->prepare("INSERT INTO enterprise_notifications
+            (notification_key, title, message, level, target_url, is_read, created_at)
+            VALUES (?, ?, ?, ?, ?, 0, ?)
+            ON DUPLICATE KEY UPDATE title=VALUES(title), message=VALUES(message), level=VALUES(level), target_url=VALUES(target_url),
+            is_read=0, read_at=NULL, created_at=VALUES(created_at)");
+        $stmt->execute([$key, $title, $message, $level, $url, date('Y-m-d H:i:s')]);
+    } catch (Throwable) {}
+}
+
+function ent_recent_audit(int $limit = 10): array
+{
+    try {
+        ent_platform_install();
+        $limit = max(1, min(50, $limit));
+        return ent_db()->query("SELECT * FROM enterprise_audit_logs ORDER BY id DESC LIMIT {$limit}")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function ent_notifications(int $limit = 8): array
+{
+    try {
+        ent_platform_install();
+        $limit = max(1, min(50, $limit));
+        return ent_db()->query("SELECT * FROM enterprise_notifications ORDER BY is_read ASC, id DESC LIMIT {$limit}")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function ent_table_first_existing(array $tables): ?string
+{
+    foreach ($tables as $table) if (ent_table_exists($table)) return $table;
+    return null;
+}

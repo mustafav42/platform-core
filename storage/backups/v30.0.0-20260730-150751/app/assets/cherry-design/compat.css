@@ -1,0 +1,6 @@
+/* v30 compatibility layer: legacy screens keep their layout while receiving shared behavior. */
+body.chv4,body.ent-ui{font-family:var(--ch-font-sans)}
+body.chv4 button,body.chv4 a,body.ent-ui button,body.ent-ui a{transition:transform var(--ch-transition),filter var(--ch-transition),box-shadow var(--ch-transition)}
+body.chv4 button:active,body.ent-ui button:active{transform:scale(.985)}
+body.chv4 input:focus-visible,body.chv4 select:focus-visible,body.ent-ui input:focus-visible,body.ent-ui select:focus-visible{outline:3px solid color-mix(in srgb,var(--ch-focus) 28%,transparent);outline-offset:1px}
+@media(pointer:coarse){body.chv4 button,body.chv4 a{min-height:var(--ch-touch-target)}}

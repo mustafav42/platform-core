@@ -1,0 +1,1 @@
+(()=>{const root=document.querySelector('[data-menu-workspace]');if(!root)return;root.querySelectorAll('.ch-tool-grid a,.ch-product-strip a').forEach(a=>a.addEventListener('click',()=>a.classList.add('is-opening'),{once:true}));})();
