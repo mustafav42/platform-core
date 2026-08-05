@@ -1,0 +1,8 @@
+Repository içinden kaldırılması önerilen gereksiz dosyalar:
+
+- docs/README_SPRINT_003.txt
+- docs/.DS_Store
+- tüm __MACOSX klasörleri
+- tüm ._ ile başlayan macOS metadata dosyaları
+
+Not: __MACOSX öğeleri yalnızca ZIP oluşturulurken oluşmuş olabilir. GitHub repository'de görünmüyorsa işlem gerekmez.

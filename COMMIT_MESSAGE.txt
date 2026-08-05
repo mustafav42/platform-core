@@ -1,0 +1,1 @@
+docs(recovery): correct recovery reading order and current status
