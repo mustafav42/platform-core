@@ -85,7 +85,7 @@ require __DIR__ . '/_header.php';
         <?php if(module_enabled('tables',true)):?><a href="../?page=tables"><i>▦</i><b>Masalar</b><small>Masa yönetimi</small></a><?php endif;?>
         <a href="../?page=staff"><i>♙</i><b>Personel</b><small>Kullanıcıları yönet</small></a>
         <?php if(module_enabled('qr-menu',true)):?><a href="../qr-experience/"><i>◈</i><b>QR Studio</b><small>Menü görünümü</small></a><?php endif;?>
-        <a href="../backup.php"><i>⇩</i><b>Yedek Al</b><small>Güvenli yedekleme</small></a>
+        <a href="backup.php"><i>⇩</i><b>Yedek Al</b><small>Yedekle ve geri yükle</small></a>
       </div>
     </article>
 

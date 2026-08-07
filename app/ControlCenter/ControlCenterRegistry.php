@@ -37,7 +37,7 @@ final class ControlCenterRegistry
             ], null, ['kds','kitchen-printer']),
             self::group('finance', 'Finans ve Raporlar', [
                 self::item('reports', 'Rapor Merkezi', 'compatibility.php?tool=reports', '▥', 'reports.view', 'reports', false, ['rapor','ciro','satış']),
-                self::item('backup', 'Yedekleme Merkezi', 'compatibility.php?tool=backup', '⇩', 'maintenance.manage', null, false, ['yedek']),
+                self::item('backup', 'Backup & Restore Center', 'backup.php', '⇩', 'maintenance.manage', null, false, ['yedek','geri yükle','restore']),
             ]),
             self::group('management', 'Yönetim', [
                 self::item('staff', 'Personel', 'personnel.php', '♙', 'staff.manage', null, false, ['personel','kullanıcı','garson']),
@@ -101,7 +101,7 @@ final class ControlCenterRegistry
             self::item('quick-media','Medya Yükle','media.php?action=upload','↑','catalog.manage',null,false,['görsel yükle']),
             self::item('quick-staff','Personel Ekle','personnel.php?action=create','＋','staff.manage',null,false,['personel ekle']),
             self::item('quick-day','İş Günü','compatibility.php?tool=business-day','◷','business_day.view',null,false,['gün başı gün sonu']),
-            self::item('quick-backup','Yedek Al','compatibility.php?tool=backup','⇩','maintenance.manage',null,false,['yedek al']),
+            self::item('quick-backup','Yedek Al','backup.php','⇩','maintenance.manage',null,false,['yedek al','restore']),
             self::item('quick-modules','Modüller','compatibility.php?tool=modules','◫','modules.manage',null,false,['modül merkezi']),
         ];
         return array_values(array_filter($actions, static fn(array $a):bool => has_permission((string)$a['permission']) && (empty($a['module']) || module_enabled((string)$a['module']))));
@@ -149,7 +149,7 @@ final class ControlCenterRegistry
             ['Menü Merkezi','Menü','admin/enterprise/menu.php',null],['Ürün Yönetimi','Menü','admin/enterprise/products.php',null],['Kategori Yönetimi','Menü','admin/enterprise/categories.php',null],['Varyant Sistemi','Menü','admin/enterprise/variants.php',null],
             ['Medya Merkezi 2.0','Medya','admin/enterprise/media.php',null],['Image Studio','Medya','admin/enterprise/image-studio.php',null],['Business Day Engine','Operasyon','app/Core/BusinessDayService.php',null],['Table Lifecycle Engine','POS','app/Core/TableLifecycleService.php','tables'],
             ['Garson Workspace','POS','staff/index.php','waiter'],['Payment Workspace','POS','cashier/index.php','cashier'],['KDS','Mutfak','kitchen/index.php','kds'],['Mutfak Yazıcısı','Mutfak','modules/kitchen-printer/','kitchen-printer'],
-            ['Sistem Sağlığı','Sistem','admin/system-center.php',null],['Yedekleme Merkezi','Sistem','admin/backup.php',null],['Modül Merkezi','Sistem','admin/module-center.php',null],['Rol ve Yetkiler','Sistem','admin/permissions.php',null],
+            ['Sistem Sağlığı','Sistem','admin/system-center.php',null],['Backup & Restore Center','Sistem','admin/enterprise/backup.php',null],['Modül Merkezi','Sistem','admin/module-center.php',null],['Rol ve Yetkiler','Sistem','admin/permissions.php',null],
         ];
         foreach($pages as [$name,$group,$source,$module]){$features[]=['type'=>'feature','id'=>strtolower(preg_replace('/[^a-z0-9]+/i','-',iconv('UTF-8','ASCII//TRANSLIT',$name)?:$name)),'name'=>$name,'group'=>$group,'status'=>$module && !module_enabled($module)?'Modül kapalı':'Hazır','tier'=>'feature','version'=>'','source'=>$source];}
         return $features;
