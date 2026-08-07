@@ -1,0 +1,161 @@
+/* Cherry Design System v1.0
+ * Shared visual tokens and admin-shell normalization.
+ * Corporate palette is based on CherryHouse's existing burgundy identity.
+ */
+:root{
+  --ch-primary:#92263a;
+  --ch-primary-600:#7d1f31;
+  --ch-primary-700:#681928;
+  --ch-primary-soft:#f8edf0;
+  --ch-primary-ring:rgba(146,38,58,.14);
+
+  --ch-bg:#f6f4f2;
+  --ch-surface:#ffffff;
+  --ch-surface-2:#fbfaf8;
+  --ch-border:#e7e1dc;
+  --ch-text:#211d1a;
+  --ch-muted:#746b65;
+  --ch-muted-2:#9a918a;
+
+  --ch-success:#218a61;
+  --ch-success-soft:#eaf7f1;
+  --ch-warning:#c8872b;
+  --ch-warning-soft:#fff5e5;
+  --ch-danger:#c94f5d;
+  --ch-danger-soft:#fff0f2;
+  --ch-info:#437fb6;
+  --ch-info-soft:#eef5fb;
+
+  --ch-radius-sm:10px;
+  --ch-radius-md:14px;
+  --ch-radius-lg:18px;
+  --ch-radius-xl:24px;
+
+  --ch-shadow-sm:0 4px 16px rgba(49,34,27,.05);
+  --ch-shadow-md:0 16px 42px rgba(49,34,27,.09);
+
+  --ch-control-h:42px;
+  --ch-page-max:1680px;
+}
+
+/* Map older Enterprise tokens to the same visual language. */
+:root{
+  --ent-accent:var(--ch-primary);
+  --ent-bg:var(--ch-bg);
+  --ent-panel:var(--ch-surface);
+  --ent-panel-2:var(--ch-surface-2);
+  --ent-ink:var(--ch-text);
+  --ent-muted:var(--ch-muted);
+  --ent-line:var(--ch-border);
+}
+
+/* Unified shell */
+body.ent-ui,
+body.ch-ui{
+  background:var(--ch-bg);
+  color:var(--ch-text);
+}
+
+.ch-content{
+  width:100%;
+  max-width:var(--ch-page-max);
+  margin:0 auto;
+}
+
+.ch-content :where(h1,h2,h3,h4,strong,b){color:var(--ch-text)}
+.ch-content :where(p,small,.muted){color:var(--ch-muted)}
+
+/* Shared surfaces */
+.ch-content :where(.card,.panel-card,.stat-card,.cc-panel,.module,.architecture){
+  border-color:var(--ch-border);
+  box-shadow:var(--ch-shadow-sm);
+}
+
+/* Shared controls */
+.ch-content :where(input,select,textarea){
+  border-color:var(--ch-border);
+}
+.ch-content :where(input,select,textarea):focus{
+  outline:0;
+  border-color:#bb7180;
+  box-shadow:0 0 0 3px var(--ch-primary-ring);
+}
+
+/* Shared buttons */
+.ch-content :where(.ch-button--primary,.ch-button-primary,.ch-btn--primary,.btn-primary,.button-primary,.primary,input[type="submit"]):not(.danger){
+  background:linear-gradient(135deg,var(--ch-primary),var(--ch-primary-600))!important;
+  border-color:transparent!important;
+  color:#fff!important;
+  box-shadow:0 8px 18px rgba(146,38,58,.18)!important;
+}
+.ch-content :where(.ch-button--primary,.ch-button-primary,.ch-btn--primary,.btn-primary,.button-primary,.primary,input[type="submit"]):not(.danger):hover{
+  background:linear-gradient(135deg,var(--ch-primary-600),var(--ch-primary-700))!important;
+}
+
+/* Compatibility pages should feel like native Control Center pages.
+   The technical compatibility layer must never be visible to the user. */
+.cc-compat-page{
+  min-height:calc(100vh - 120px)!important;
+  gap:0!important;
+}
+.cc-compat-head{
+  display:none!important;
+}
+.cc-compat-frame-wrap{
+  height:calc(100vh - 126px)!important;
+  min-height:640px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  overflow:hidden!important;
+}
+.cc-compat-frame{
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  background:transparent!important;
+}
+.cc-compat-loading{
+  background:var(--ch-bg)!important;
+}
+.cc-compat-loading span{
+  border-color:#eadde1!important;
+  border-top-color:var(--ch-primary)!important;
+}
+
+/* Normalize common module switches if rendered in the Control Center. */
+.ch-content .toggle{
+  position:relative;
+  flex:0 0 auto;
+  width:48px;
+  height:28px;
+  padding:3px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:#d7d1cd!important;
+  box-shadow:inset 0 0 0 1px rgba(33,29,26,.05)!important;
+}
+.ch-content .toggle span{
+  display:block;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 7px rgba(33,29,26,.18);
+  transform:translateX(0);
+  transition:transform .18s ease;
+}
+.ch-content .is-on .toggle{
+  background:var(--ch-success)!important;
+}
+.ch-content .is-on .toggle span{
+  transform:translateX(20px);
+}
+
+@media(max-width:760px){
+  .cc-compat-frame-wrap{
+    height:calc(100vh - 112px)!important;
+    min-height:560px!important;
+  }
+}
