@@ -159,3 +159,223 @@ body.ch-ui{
     min-height:560px!important;
   }
 }
+
+
+/* ===== CDS v1.1 — Layout & Component Cleanup ===== */
+
+:root{
+  --ch-sidebar-w:264px;
+  --ch-header-h:68px;
+  --ch-page-pad-x:28px;
+  --ch-page-pad-y:24px;
+  --ch-card-pad:20px;
+  --ch-gap-sm:12px;
+  --ch-gap-md:18px;
+  --ch-gap-lg:24px;
+}
+
+/* Page rhythm */
+.ch-content,
+.enterprise-content,
+.cc-content,
+.main-content{
+  box-sizing:border-box;
+  width:100%;
+  max-width:var(--ch-page-max);
+  margin-inline:auto;
+  padding-inline:var(--ch-page-pad-x);
+}
+
+.ch-content > :first-child,
+.enterprise-content > :first-child,
+.cc-content > :first-child,
+.main-content > :first-child{
+  margin-top:0;
+}
+
+/* Shared card spacing */
+.ch-content :where(.card,.panel-card,.stat-card,.cc-panel,.module,.architecture),
+.enterprise-content :where(.card,.panel-card,.stat-card,.cc-panel,.module,.architecture),
+.cc-content :where(.card,.panel-card,.stat-card,.cc-panel,.module,.architecture){
+  border:1px solid var(--ch-border);
+  border-radius:var(--ch-radius-lg);
+  background:var(--ch-surface);
+  padding:var(--ch-card-pad);
+}
+
+/* Grid consistency */
+.ch-grid,
+.cards-grid,
+.module-grid,
+.stats-grid,
+.dashboard-grid{
+  display:grid;
+  gap:var(--ch-gap-md);
+  align-items:stretch;
+}
+
+/* Buttons */
+.ch-content :where(button,.btn,.ch-btn,a.button,input[type="submit"],input[type="button"]),
+.enterprise-content :where(button,.btn,.ch-btn,a.button,input[type="submit"],input[type="button"]){
+  min-height:var(--ch-control-h);
+  border-radius:12px;
+  padding:10px 16px;
+  font-weight:800;
+  line-height:1.1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  white-space:nowrap;
+}
+
+/* Tables */
+.ch-content table,
+.enterprise-content table,
+.cc-content table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:var(--ch-surface);
+  border:1px solid var(--ch-border);
+  border-radius:var(--ch-radius-lg);
+  overflow:hidden;
+}
+.ch-content th,
+.enterprise-content th,
+.cc-content th{
+  background:var(--ch-surface-2);
+  color:var(--ch-muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-weight:800;
+}
+.ch-content th,.ch-content td,
+.enterprise-content th,.enterprise-content td,
+.cc-content th,.cc-content td{
+  padding:13px 14px;
+  border-bottom:1px solid var(--ch-border);
+  vertical-align:middle;
+}
+.ch-content tr:last-child td,
+.enterprise-content tr:last-child td,
+.cc-content tr:last-child td{
+  border-bottom:0;
+}
+
+/* Forms */
+.ch-form-row,
+.form-row,
+.field-row{
+  display:grid;
+  gap:8px;
+  margin-bottom:16px;
+}
+.ch-content label,
+.enterprise-content label{
+  font-weight:700;
+  color:var(--ch-text);
+  font-size:13px;
+}
+.ch-content :where(input,select,textarea),
+.enterprise-content :where(input,select,textarea){
+  min-height:var(--ch-control-h);
+  width:100%;
+  box-sizing:border-box;
+  padding:10px 12px;
+  border:1px solid var(--ch-border);
+  border-radius:12px;
+  background:#fff;
+}
+
+/* Native-feeling legacy iframe pages */
+.cc-compat-frame-wrap{
+  margin:0!important;
+  width:100%!important;
+}
+.cc-compat-page .cc-compat-frame{
+  border-radius:0!important;
+}
+
+/* Reduce random legacy offsets */
+.cc-compat-frame-wrap,
+.cc-compat-page,
+.cc-page,
+.enterprise-page{
+  margin-left:0!important;
+  transform:none!important;
+}
+
+/* Page headings */
+.ch-page-title,
+.page-title,
+.cc-page-title,
+.enterprise-page h1{
+  font-size:26px;
+  line-height:1.2;
+  margin:0 0 6px;
+  letter-spacing:-.02em;
+}
+.ch-page-subtitle,
+.page-subtitle,
+.cc-page-subtitle{
+  color:var(--ch-muted);
+  margin:0 0 20px;
+}
+
+/* Empty states */
+.empty-state,
+.ch-empty{
+  border:1px dashed #d8d0ca;
+  border-radius:var(--ch-radius-lg);
+  background:var(--ch-surface-2);
+  padding:32px 22px;
+  text-align:center;
+  color:var(--ch-muted);
+}
+
+/* Alerts */
+.alert,
+.ch-alert{
+  border-radius:14px;
+  padding:13px 15px;
+  border:1px solid var(--ch-border);
+  background:#fff;
+}
+.alert-success,.ch-alert--success{background:var(--ch-success-soft);border-color:#cdeadd;color:#176548}
+.alert-warning,.ch-alert--warning{background:var(--ch-warning-soft);border-color:#f0dfbd;color:#8b5c18}
+.alert-danger,.ch-alert--danger{background:var(--ch-danger-soft);border-color:#ffd9de;color:#a63a48}
+.alert-info,.ch-alert--info{background:var(--ch-info-soft);border-color:#d8e8f5;color:#32648e}
+
+/* Desktop and compact layout */
+@media (min-width:1200px){
+  .ch-content,
+  .enterprise-content,
+  .cc-content,
+  .main-content{
+    padding-inline:32px;
+  }
+}
+@media (max-width:900px){
+  :root{
+    --ch-page-pad-x:18px;
+    --ch-card-pad:16px;
+  }
+}
+@media (max-width:640px){
+  :root{
+    --ch-page-pad-x:12px;
+    --ch-control-h:44px;
+  }
+  .ch-content,
+  .enterprise-content,
+  .cc-content,
+  .main-content{
+    padding-inline:12px;
+  }
+  .ch-content :where(button,.btn,.ch-btn,a.button,input[type="submit"],input[type="button"]),
+  .enterprise-content :where(button,.btn,.ch-btn,a.button,input[type="submit"],input[type="button"]){
+    width:100%;
+  }
+}
