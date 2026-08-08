@@ -362,3 +362,185 @@
     font-size:17px;
   }
 }
+
+
+/* =========================================================
+   Sprint-010A v2.1 — Shared POS Table Experience
+   Waiter and cashier table mode are intentionally identical.
+   ========================================================= */
+
+:root{
+  --ch-table-open:#92263a;
+  --ch-table-open-soft:#f8edf0;
+  --ch-table-open-border:#d9a4af;
+}
+
+/* Occupied = Cherry red. Orange is no longer used for occupied tables. */
+.ch-table-grid .v4-table-card.is-open{
+  --table-accent:var(--ch-table-open)!important;
+  --table-accent-soft:var(--ch-table-open-soft)!important;
+  --table-accent-border:var(--ch-table-open-border)!important;
+}
+
+/* Duration / metric text must remain readable on white card surfaces. */
+.ch-table-card-v2__metric,
+.ch-table-card-v2__metric-copy,
+.ch-table-card-v2__metric-copy b,
+.ch-table-card-v2__metric-copy small,
+.ch-table-card-v2__metric [data-open-duration]{
+  color:#101828!important;
+}
+.ch-table-card-v2__metric-copy small{color:#98a2b3!important}
+
+/* Shared waiter/cashier tables-only shell */
+.chv4-waiter .v4-table-layout,
+.chv4-cashier .v4-cash-layout.tables-mode{
+  grid-template-columns:190px minmax(0,1fr)!important;
+  height:calc(100vh - 72px)!important;
+  overflow:hidden!important;
+}
+
+.chv4-waiter .v4-table-main,
+.chv4-cashier .v4-table-main.cashier-tables-only{
+  min-width:0!important;
+  height:100%!important;
+  padding:18px 22px 14px!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+
+.chv4-waiter .v4-side-nav,
+.chv4-cashier .v4-side-nav{
+  width:auto!important;
+  min-width:0!important;
+  padding:22px 12px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+}
+
+/* Header and toolbar use the same rhythm for both roles. */
+.chv4-waiter .v4-page-head,
+.chv4-cashier .v4-page-head{
+  flex:0 0 auto;
+  margin-bottom:12px!important;
+}
+.chv4-waiter .v4-table-toolbar,
+.chv4-cashier .v4-table-toolbar{
+  flex:0 0 auto;
+  margin-bottom:12px!important;
+}
+
+/* CH-TableGrid Engine owns the dimensions. */
+.ch-table-grid[data-table-grid]{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  width:100%!important;
+  overflow:hidden!important;
+  align-content:stretch!important;
+  justify-content:stretch!important;
+  gap:var(--ch-grid-gap,12px)!important;
+}
+
+.ch-table-grid[data-table-grid] .v4-table-card{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  min-width:0!important;
+}
+.ch-table-grid[data-table-grid] .ch-direct-table-form,
+.ch-table-grid[data-table-grid] .ch-direct-table-button,
+.ch-table-grid[data-table-grid] .v4-table-card>a,
+.ch-table-grid[data-table-grid] .v4-table-card>div,
+.ch-table-grid[data-table-grid] .ch-table-card-v2{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+}
+
+/* Density modes: keep text readable; remove secondary information before shrinking text. */
+.ch-table-grid[data-density="medium"] .ch-table-card-v2__identity{padding:12px 4px 9px}
+.ch-table-grid[data-density="medium"] .ch-table-card-v2__name{font-size:27px!important}
+.ch-table-grid[data-density="medium"] .ch-table-card-v2__metrics{min-height:48px}
+.ch-table-grid[data-density="medium"] .ch-table-card-v2__footer{min-height:42px;font-size:16px}
+
+.ch-table-grid[data-density="compact"] .ch-table-card-v2{padding:10px 11px 0}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__identity{padding:8px 2px 7px}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__name{font-size:23px!important}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__area{font-size:10px;margin-top:4px}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__metrics{min-height:38px;padding:5px 0}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__metric-icon,
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__metric-copy small{display:none!important}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__metric-copy b{font-size:11px!important}
+.ch-table-grid[data-density="compact"] .ch-table-card-v2__footer{
+  margin-left:-11px;margin-right:-11px;min-height:36px;font-size:14px;padding:5px 8px
+}
+
+.ch-table-grid[data-density="micro"] .ch-table-card-v2{padding:8px 9px 0}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__top{min-height:20px}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__status{min-height:19px;padding:0 6px;font-size:8px}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__more{display:none!important}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__identity{padding:5px 0 4px}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__name{font-size:20px!important}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__area,
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__divider,
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metric:first-child,
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metric-icon,
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metric-copy small,
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__empty-icon{
+  display:none!important;
+}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metrics{
+  display:flex!important;
+  justify-content:center!important;
+  min-height:24px!important;
+  padding:2px 0!important;
+}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metric{
+  border:0!important;padding:0!important
+}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__metric-copy b{font-size:10px!important}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__footer{
+  margin-left:-9px;margin-right:-9px;min-height:31px;font-size:12px;padding:3px 5px
+}
+.ch-table-grid[data-density="micro"] .ch-table-card-v2__footer.is-empty{
+  background:transparent!important;color:#c6ccd5!important
+}
+
+/* Table screens never scroll. */
+body.ch-pos-tables-only{
+  overflow:hidden!important;
+}
+body.ch-pos-tables-only .v4-table-main{
+  overflow:hidden!important;
+}
+
+@media(max-width:900px){
+  body.ch-pos-tables-only{overflow:hidden!important}
+  body.ch-pos-tables-only .v4-table-layout,
+  body.ch-pos-tables-only .v4-cash-layout.tables-mode{
+    display:grid!important;
+    grid-template-columns:150px minmax(0,1fr)!important;
+    height:calc(100vh - 72px)!important;
+  }
+  body.ch-pos-tables-only .v4-side-nav{display:flex!important;padding:14px 8px!important}
+  body.ch-pos-tables-only .v4-side-link{padding:11px 10px!important;font-size:12px}
+  body.ch-pos-tables-only .v4-table-main{padding:12px!important}
+  body.ch-pos-tables-only .v4-page-head h1{font-size:22px}
+  body.ch-pos-tables-only .v4-page-head p{display:none}
+  body.ch-pos-tables-only .v4-search{height:40px}
+}
+
+@media(max-width:620px){
+  body.ch-pos-tables-only .v4-table-layout,
+  body.ch-pos-tables-only .v4-cash-layout.tables-mode{
+    grid-template-columns:118px minmax(0,1fr)!important;
+  }
+  body.ch-pos-tables-only .v4-side-title{padding-left:7px}
+  body.ch-pos-tables-only .v4-side-link{padding:9px 7px!important;font-size:11px}
+  body.ch-pos-tables-only .v4-metrics>div{min-width:52px;padding:5px 7px}
+  body.ch-pos-tables-only .v4-metrics b{font-size:15px}
+  body.ch-pos-tables-only .v4-metrics span{font-size:9px}
+  body.ch-pos-tables-only .v4-table-toolbar{margin-bottom:7px!important}
+}
