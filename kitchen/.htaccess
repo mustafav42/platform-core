@@ -1,0 +1,17 @@
+DirectoryIndex index.php
+
+# KDS is a live operational screen. It must NEVER be served from full-page cache.
+<IfModule LiteSpeed>
+    CacheLookup off
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+</IfModule>
+
+# Apache cache modules, if enabled.
+<IfModule mod_cache.c>
+    CacheDisable /
+</IfModule>
