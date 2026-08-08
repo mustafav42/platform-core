@@ -123,7 +123,7 @@ final class FinancialOperationService
                 if ($itemId < 1 || $requestedQty <= 0) continue;
 
                 $q = $this->pdo->prepare(
-                    "SELECT oi.*, o.session_id, o.order_id AS ignored_order_id
+                    "SELECT oi.*, o.session_id
                      FROM order_items oi
                      JOIN orders o ON o.id=oi.order_id
                      WHERE oi.id=? AND o.session_id=? AND oi.status='active'
