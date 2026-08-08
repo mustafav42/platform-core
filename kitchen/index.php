@@ -2,6 +2,11 @@
 declare(strict_types=1);
 require dirname(__DIR__).'/app/bootstrap.php';
 if(!is_file(BASE_PATH.'/storage/installed.lock')) redirect('../install/');
+
+// KDS is an optional operational module. Direct URL access must respect Module Center.
+if(!module_enabled('kds', false)){
+    redirect('../admin/enterprise/?notice='.rawurlencode('KDS / Mutfak modülü devre dışı.'));
+}
 $role=(string)($_SESSION['admin_role'] ?? $_SESSION['cashier_role'] ?? $_SESSION['staff_role'] ?? 'guest');
 $logged=!empty($_SESSION['admin_id']) || !empty($_SESSION['cashier_id']) || (!empty($_SESSION['staff_id']) && $role==='manager');
 if(!$logged) redirect('../admin/');
@@ -14,7 +19,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   $orderId=(int)($_POST['order_id']??0);
   $next=(string)($_POST['kitchen_status']??'');
   if(!in_array($next,['new','preparing','ready','delivered'],true)) throw new RuntimeException('Geçersiz mutfak durumu.');
-  $q=$pdo->prepare("UPDATE orders SET kitchen_status=?, kitchen_started_at=CASE WHEN ?='preparing' AND kitchen_started_at IS NULL THEN NOW() ELSE kitchen_started_at END, kitchen_ready_at=CASE WHEN ?='ready' THEN NOW() ELSE kitchen_ready_at END WHERE id=? AND status='submitted'");
+  $q=$pdo->prepare("UPDATE orders o
+      JOIN table_sessions ts ON ts.id=o.session_id
+      SET o.kitchen_status=?,
+          o.kitchen_started_at=CASE WHEN ?='preparing' AND o.kitchen_started_at IS NULL THEN NOW() ELSE o.kitchen_started_at END,
+          o.kitchen_ready_at=CASE WHEN ?='ready' THEN NOW() ELSE o.kitchen_ready_at END
+      WHERE o.id=? AND o.status='submitted' AND ts.status='open'");
   $q->execute([$next,$next,$next,$orderId]);
   if(!$q->rowCount()) throw new RuntimeException('Sipariş bulunamadı veya güncellenemedi.');
   audit_log('kitchen_status_changed','Mutfak sipariş durumu değiştirildi.',['order_id'=>$orderId,'status'=>$next]);
@@ -22,7 +32,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  }catch(Throwable $e){$error=$e->getMessage();}
 }
 $filter=(string)($_GET['status']??'active');
-$where="o.status='submitted' AND oi.status IN ('active','complimentary')";
+$where="o.status='submitted' AND ts.status='open' AND oi.status IN ('active','complimentary')";
 $params=[];
 if(in_array($filter,['new','preparing','ready','delivered'],true)){$where.=' AND o.kitchen_status=?';$params[]=$filter;}
 elseif($filter==='active'){$where.=" AND o.kitchen_status IN ('new','preparing','ready')";}

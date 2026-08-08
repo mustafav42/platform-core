@@ -3,10 +3,10 @@ declare(strict_types=1);
 return [
     'id' => 'kitchen-printer',
     'name' => 'Mutfak Yazıcısı',
-    'description' => 'Çoklu yazıcı, istasyon yönlendirme ve güvenli baskı kuyruğu.',
+    'description' => 'Opsiyonel çoklu mutfak yazıcısı, istasyon yönlendirme ve güvenli baskı kuyruğu.',
     'version' => '5.1.0',
     'tier' => 'core',
-    'default_enabled' => 1,
+    'default_enabled' => 0,
     'locked' => 0,
     'order' => 50,
     'icon' => '▤',
