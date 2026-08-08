@@ -69,7 +69,27 @@ try{
    $pdo->beginTransaction();$pdo->prepare("INSERT INTO orders(session_id,staff_id,status,created_at,business_day_id) VALUES(?,?,'submitted',NOW(),?)")->execute([$sid,$staffId,(int)$businessDay['id']]);$oid=(int)$pdo->lastInsertId();
    $ins=$pdo->prepare("INSERT INTO order_items(order_id,product_id,product_name,unit_price,quantity,item_note,status) VALUES(?,?,?,?,?,?,'active')");
    foreach($cart as $row)$ins->execute([$oid,$row['product_id'],$row['product_name'],$row['unit_price'],$row['quantity'],$row['item_note']]);
-   $tableLifecycle->activateSession($sid);$pdo->commit();unset($_SESSION['waiter_pending_orders'][$sid]);redirect('./?sent=1');
+   $tableLifecycle->activateSession($sid);
+   $pdo->commit();
+
+   // Order is committed before external side effects. KDS sees submitted orders
+   // directly from the database; optional printer integrations subscribe here.
+   EventDispatcher::dispatch('order.created',[
+    'order_id'=>$oid,
+    'session_id'=>$sid,
+    'staff_id'=>$staffId,
+    'business_day_id'=>(int)$businessDay['id'],
+   ]);
+   audit_log('pos_order_submitted','Garson siparişi gönderdi.',[
+    'order_id'=>$oid,
+    'session_id'=>$sid,
+    'staff_id'=>$staffId,
+    'item_count'=>count($cart),
+    'order_total'=>waiterCartTotal($cart),
+   ]);
+
+   unset($_SESSION['waiter_pending_orders'][$sid]);
+   redirect('./?sent=1&order='.$oid);
   }
   if($action==='remove_item'){
    $sid=(int)$_POST['session_id'];$itemId=(int)$_POST['item_id'];$q=$pdo->prepare("UPDATE order_items oi JOIN orders o ON o.id=oi.order_id SET oi.status='cancelled' WHERE oi.id=? AND o.session_id=? AND oi.status='active'");$q->execute([$itemId,$sid]);if($tableLifecycle->reconcileSession($sid)){unset($_SESSION['waiter_pending_orders'][$sid]);redirect('./');}redirect('./?session='.$sid.'&category='.$categoryId);
@@ -91,7 +111,7 @@ if($sessionId){
 if(ob_get_length())ob_clean();
 if(!$businessDay){?><!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>İş Günü Kapalı</title><style>body{margin:0;font-family:Inter,system-ui;background:#f4f6f8;display:grid;place-items:center;min-height:100vh;color:#172033}.lock{max-width:600px;background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:34px;text-align:center;box-shadow:0 20px 60px #0f172a12}.icon{font-size:56px}.lock h1{font-size:29px;margin:12px}.lock p{color:#667085;line-height:1.6}.lock a{display:inline-block;margin-top:12px;padding:13px 18px;border-radius:12px;background:#344054;color:#fff;text-decoration:none;font-weight:800}</style></head><body><section class="lock"><div class="icon">🔒</div><h1>İşletme henüz satışa açılmadı</h1><p>Yetkili personel Gün Başı yapana kadar masa ve sipariş işlemleri kullanılamaz.</p><a href="?logout=1">Çıkış Yap</a></section></body></html><?php exit;}?>
 ?><!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>CherryHouse POS · Garson</title><link rel="stylesheet" href="../app/assets/pos-v4.css?v=420"><link rel="stylesheet" href="../app/assets/cherry-design/tokens.css?v=300"><link rel="stylesheet" href="../app/assets/pos-v5-alpha.css?v=3010"><link rel="stylesheet" href="../app/assets/pos-v5-beta.css?v=3020"><link rel="stylesheet" href="../app/assets/table-flow-hotfix.css?v=5210"><link rel="stylesheet" href="../app/assets/pos-waiter-ui-v2.css?v=3052"><link rel="stylesheet" href="../app/assets/pos-waiter-ui-v2.1.css?v=3053"><script defer src="../app/assets/pos-v4.js?v=30532"></script><script defer src="../app/assets/pos-v5-alpha.js?v=3010"></script><script defer src="../app/assets/pos-v5-beta.js?v=3020"></script><script defer src="../app/assets/pos-table-grid-engine.js?v=5210"></script><script defer src="../app/assets/pos-waiter-ui-v2.1.js?v=30532"></script></head>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>CherryHouse POS · Garson</title><link rel="stylesheet" href="../app/assets/pos-v4.css?v=420"><link rel="stylesheet" href="../app/assets/cherry-design/tokens.css?v=300"><link rel="stylesheet" href="../app/assets/pos-v5-alpha.css?v=3010"><link rel="stylesheet" href="../app/assets/pos-v5-beta.css?v=3020"><link rel="stylesheet" href="../app/assets/table-flow-hotfix.css?v=5210"><link rel="stylesheet" href="../app/assets/pos-waiter-ui-v2.css?v=3052"><link rel="stylesheet" href="../app/assets/pos-waiter-ui-v2.1.css?v=3053"><link rel="stylesheet" href="../app/assets/pos-order-rc1.css?v=3110"><script defer src="../app/assets/pos-v4.js?v=30532"></script><script defer src="../app/assets/pos-v5-alpha.js?v=3010"></script><script defer src="../app/assets/pos-v5-beta.js?v=3020"></script><script defer src="../app/assets/pos-table-grid-engine.js?v=5210"></script><script defer src="../app/assets/pos-waiter-ui-v2.1.js?v=30532"></script></head>
 <body class="chv4 chv4-waiter ch-pos5">
 <header class="v4-topbar"><a class="v4-back" href="<?=$active?'./':'../admin/'?>">‹</a><div class="v4-brand"><span class="v4-mark">🍒</span><div><strong><?=e(setting('business_name','CherryHouse'))?></strong><small>POS 5.0 Beta · Garson</small></div></div><div class="v4-top-status"><span class="online-dot"></span> Çevrimiçi <b class="v4-live-clock" data-live-clock></b></div><button type="button" class="v4-fullscreen" data-fullscreen title="Tam ekran">⛶</button><div class="v4-user"><span><?=e($_SESSION['staff_name'])?></span><a href="?logout=1">Çıkış</a></div></header>
 <?php if($error):?><div class="v4-alert danger"><?=e($error)?></div><?php endif;?><?php if(isset($_GET['sent'])):?><div class="v4-alert success">Sipariş mutfağa gönderildi.</div><?php endif;?>

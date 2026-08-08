@@ -1,0 +1,22 @@
+/* CherryHouse POS v1.0 RC1 — Order-flow feedback */
+.ch-pos-order-success{
+  position:fixed;
+  top:82px;
+  left:50%;
+  z-index:9000;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  max-width:min(520px,calc(100vw - 28px));
+  padding:9px 16px;
+  border:1px solid #b9e5ca;
+  border-radius:13px;
+  background:#edf9f1;
+  color:#176548;
+  box-shadow:0 12px 30px rgba(23,101,72,.12);
+  font-weight:850;
+  font-size:13px;
+  pointer-events:none;
+}
