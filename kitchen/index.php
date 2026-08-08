@@ -3,8 +3,22 @@ declare(strict_types=1);
 require dirname(__DIR__).'/app/bootstrap.php';
 if(!is_file(BASE_PATH.'/storage/installed.lock')) redirect('../install/');
 
-// KDS is an optional operational module. Direct URL access must respect Module Center.
-if(!module_enabled('kds', false)){
+// KDS is an optional operational module.
+// IMPORTANT: Gate direct URL access using the persisted Module Center value itself.
+// This intentionally avoids any fallback/default ambiguity: only the literal value "1"
+// means KDS may be opened.
+$kdsEnabled = false;
+try {
+    $q = db()->prepare("SELECT setting_value FROM settings WHERE setting_key='module.kds.enabled' LIMIT 1");
+    $q->execute();
+    $savedKdsState = $q->fetchColumn();
+    $kdsEnabled = ($savedKdsState !== false && (string)$savedKdsState === '1');
+} catch (Throwable) {
+    $kdsEnabled = false;
+}
+
+if(!$kdsEnabled){
+    // Do not render a single byte of the kitchen board when the module is disabled.
     redirect('../admin/enterprise/?notice='.rawurlencode('KDS / Mutfak modülü devre dışı.'));
 }
 $role=(string)($_SESSION['admin_role'] ?? $_SESSION['cashier_role'] ?? $_SESSION['staff_role'] ?? 'guest');
