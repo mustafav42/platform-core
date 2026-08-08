@@ -1,0 +1,1 @@
+docs(release): add POS go-live readiness checklist
